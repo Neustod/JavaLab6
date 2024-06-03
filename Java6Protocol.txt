@@ -1,0 +1,76 @@
+There are client und server
+
+Request codes:
+	REQUEST_CONNECT
+	REQUEST_SEND
+	REQUEST_RECIEVE
+	REQUEST_DELETE
+
+Answer codes:
+	ANSWER_SUCCESS
+	ANSWER_ERROR
+	ANSWER_INVALID
+
+On the server side:
+	1 Thread for GUI
+	1 Thread to split GUI and communication:
+		5 Thread to communicate:
+			1 Critical Section based on Events
+			1 dSocket to recieve
+			1 dSocket to send
+	Actions:
+		1. Get some packet
+		2. Read code
+		3. Read ipAddress
+		4. Do some action depending on code and packet
+		5. Create answer packet to certain adress
+	7 Threads
+
+On the client side:
+	1 Thread for GUI
+	1 Thread to calculate and communicate:
+		1 dSocket to recieve
+		1 dSocket to send
+		5 Threads for partial calculations;
+	Actions:
+		1. Send packet to certain address
+		2. Recieve packet from the certain address
+		3. Do some action depending on code and packet
+	7 Threads
+
+------------------------------------------------------------------------------
+
+// Connect
+client	->	code(connect)					->	Server
+client	<-	code(success)					<-	Server
+
+------------------------------------------------------------------------------
+
+// Send data
+client	->	code(send),	RecIntegral(Serialized)		->	Server
+
+client	<-	code(success)					<-	Server
+or
+client	<-	code(error)					<-	Server
+
+------------------------------------------------------------------------------
+
+// Recieve data
+client	->	code(recieve),					->	Server
+
+client	<-	code(success),	list of RecIntegral(Serialized)	<-	Server
+or
+client	<-	code(error)					<-	Server
+
+------------------------------------------------------------------------------
+
+// Delete data
+client	->	code(delete),	{index, RecIntegral(Serialized)}->	Server
+
+client	<-	code(success)					<-	Server
+or
+client	<-	code(invalid)					<-	Server
+or
+client	<-	code(error)					<-	Server
+
+------------------------------------------------------------------------------
